@@ -99,7 +99,7 @@ userSchema.methods.comparePassword = function (candidatePassword, callback) {
 }
 
 // Generate a token for the logged in user
-userSchema.methods.generateToken = function(callback) {
+userSchema.methods.generateToken = function (callback) {
     var user = this;
     var token = jwt.sign(user._id.toHexString(), process.env.SECRET_PASS);
     user.token = token;
@@ -115,6 +115,25 @@ userSchema.methods.generateToken = function(callback) {
 
 }
 
+
+
+userSchema.statics.findByToken = function (token, callback) {
+    var user = this;
+
+
+    jwt.verify(token, process.env.SECRET_PASS, function (err, decode) {
+
+
+        user.findOne({ "_id": decode, "token": token }, function (err, user) {
+            if (err) {
+                return callback(err);
+            }
+
+            callback(null, user)
+
+        })
+    })
+}
 
 
 const User = mongoose.model('User', userSchema);

@@ -33,11 +33,26 @@ const { User } = require('./Models/userModels');
 
 
 
+// Middlewares 
+const { auth } = require('./middleware/auth');
+
+
 /**
 |=============================================
 |                   USERS
 |=============================================
 */
+
+app.get('/api/users/auth', auth, (req, res) => {
+    const {token, user} = req
+    res.status(200).json({
+        user
+    })
+
+})
+
+
+
 
 app.post('/api/users/register', (req, res) => {
     const user = new User(req.body);
@@ -51,25 +66,33 @@ app.post('/api/users/register', (req, res) => {
             userData: doc
         })
     })
-
-    console.log('The data is saved')
 });
+
+
+
+
+
+
 
 app.post('/api/users/login', (req, res) => {
     const { email, password } = req.body;
 
 
     User.findOne({ 'email': email }, (err, user) => {
+
+        // If no user is found by a specific email
         if (!user) {
             return res.json({ loginSuccess: false, message: 'Authentication failed, Email Not Found' })
         }
 
 
+        // Compare the clients password with the one in Database
         user.comparePassword(password, (err, isMatch) => {
             if (!isMatch) {
                 return res.json({ loginSuccess: false, message: 'Wrong password' })
             }
 
+            // If passwords match generate a unique token for the user
             user.generateToken((err, user) => {
                 if (err) {
                     return res.status(400).send(err);
