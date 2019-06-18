@@ -46,9 +46,9 @@ const { auth } = require('./middleware/auth');
 app.get('/api/users/auth', auth, (req, res) => {
     const {token, user} = req
     res.status(200).json({
-        user
+        user, 
+        token
     })
-
 })
 
 
