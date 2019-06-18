@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const logger = require('morgan');
 
 // To get access to environment variables
 require('dotenv').config();
@@ -16,8 +17,10 @@ mongoose.connect(process.env.DATABASE_URI || databaseUri);
 
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser())
 app.use(cookieParser());
+app.use(logger('dev'))
+
 
 
 /**
@@ -50,6 +53,36 @@ app.post('/api/users/register', (req, res) => {
     })
 
     console.log('The data is saved')
+});
+
+app.post('/api/users/login', (req, res) => {
+    const { email, password } = req.body;
+
+
+    User.findOne({ 'email': email }, (err, user) => {
+        if (!user) {
+            return res.json({ loginSuccess: false, message: 'Authentication failed, Email Not Found' })
+        }
+
+
+        user.comparePassword(password, (err, isMatch) => {
+            if (!isMatch) {
+                return res.json({ loginSuccess: false, message: 'Wrong password' })
+            }
+
+            user.generateToken((err, user) => {
+                if (err) {
+                    return res.status(400).send(err);
+                }
+
+                res.cookie("w_auth", user.token).status(200).json({
+                    loginSuccess: true,
+                })
+
+            })
+        })
+    })
+
 })
 
 const PORT = process.env.PORT || 3002
