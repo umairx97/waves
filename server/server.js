@@ -62,6 +62,19 @@ app.get('/api/users/auth', auth, (req, res) => {
 
 
 
+// Logout users by deleting the token
+app.get('/api/users/logout', auth, (req, res) => {
+    User.findOneAndUpdate({ _id: req.user._id }, { token: "" }, (err, doc) => {
+        if (err) return res.json({ success: false, err })
+        
+        return res.status(200).json({
+            success: true
+        })
+    })
+})
+
+
+
 
 
 // Register new Users
