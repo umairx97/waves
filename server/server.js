@@ -43,17 +43,28 @@ const { auth } = require('./middleware/auth');
 |=============================================
 */
 
+// Get Token for the authenticated user
 app.get('/api/users/auth', auth, (req, res) => {
-    const {token, user} = req
+    const { email, name, lastName, role, cart, history } = req.user
+
     res.status(200).json({
-        user, 
-        token
+        isAdmin: role === 0 ? false : true,
+        isAuth: true,
+        email,
+        name,
+        lastName,
+        role,
+        cart,
+        history
     })
 })
 
 
 
 
+
+
+// Register new Users
 app.post('/api/users/register', (req, res) => {
     const user = new User(req.body);
 
@@ -63,7 +74,6 @@ app.post('/api/users/register', (req, res) => {
         }
         res.status(200).json({
             success: true,
-            userData: doc
         })
     })
 });
@@ -73,7 +83,7 @@ app.post('/api/users/register', (req, res) => {
 
 
 
-
+// Login Users
 app.post('/api/users/login', (req, res) => {
     const { email, password } = req.body;
 

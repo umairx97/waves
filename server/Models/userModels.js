@@ -116,21 +116,19 @@ userSchema.methods.generateToken = function (callback) {
 }
 
 
-
+// Find a user by Token
 userSchema.statics.findByToken = function (token, callback) {
     var user = this;
 
-
+    // Verify that the token was generated using our own Key
     jwt.verify(token, process.env.SECRET_PASS, function (err, decode) {
 
-
+        // Find the specific id and the token 
         user.findOne({ "_id": decode, "token": token }, function (err, user) {
             if (err) {
                 return callback(err);
             }
-
             callback(null, user)
-
         })
     })
 }
