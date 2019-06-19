@@ -13,12 +13,19 @@ const app = express();
 // Mongodb Connections
 mongoose.Promise = global.Promise;
 const databaseUri = "mongodb://localhost:27017/waves"
-mongoose.connect(process.env.DATABASE_URI || databaseUri);
+mongoose.connect(process.env.DATABASE_URI || databaseUri, (err, db) => {
+    if (err) {
+        console.log('Cannot connect to Database', err)
+    }
+
+    console.log('Mongoose Open For Business')
+});
 
 
 app.use(cors());
-app.use(bodyParser())
-app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json());
+app.use(cookieParser())
 app.use(logger('dev'))
 
 
@@ -66,7 +73,7 @@ app.get('/api/users/auth', auth, (req, res) => {
 app.get('/api/users/logout', auth, (req, res) => {
     User.findOneAndUpdate({ _id: req.user._id }, { token: "" }, (err, doc) => {
         if (err) return res.json({ success: false, err })
-        
+
         return res.status(200).json({
             success: true
         })
