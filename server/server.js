@@ -9,6 +9,21 @@ const chalk = require('chalk')
 // To get access to environment variables
 require('dotenv').config();
 
+/**
+|=============================================
+|                   MODELS
+|=============================================
+*/
+
+const { User } = require('./Models/userModel');
+const { Brand } = require('./Models/brandModel');
+
+
+// Middlewares 
+const { auth } = require('./middleware/auth');
+const { adminAuth } = require('./middleware/adminAuth');
+
+
 const app = express();
 
 // Mongodb Connections
@@ -32,24 +47,6 @@ app.use((req, res, next) => {
     console.log(`${Date()}`)
     next();
 })
-
-
-
-
-/**
-|=============================================
-|                   MODELS
-|=============================================
-*/
-
-const { User } = require('./Models/userModel');
-const { Brand } = require('./Models/brandModel');
-
-
-// Middlewares 
-const { auth } = require('./middleware/auth');
-const { adminAuth } = require('./middleware/adminAuth');
-
 
 
 /**
