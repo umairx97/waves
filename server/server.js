@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const logger = require('morgan');
+const chalk = require('chalk')
 
 // To get access to environment variables
 require('dotenv').config();
@@ -15,10 +16,10 @@ mongoose.Promise = global.Promise;
 const databaseUri = "mongodb://localhost:27017/waves"
 mongoose.connect(process.env.DATABASE_URI || databaseUri, (err, db) => {
     if (err) {
-        console.log('Cannot connect to Database', err)
+        console.log(chalk.bold.red('Cannot connect to Database', err))
     }
 
-    console.log('Mongoose Open For Business')
+    console.log(chalk.bold.yellow('Mongoose Open For Business'))
 });
 
 
@@ -27,6 +28,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 app.use(cookieParser())
 app.use(logger('dev'))
+app.use((req, res, next) => {
+    console.log(`${Date()}`)
+    next();
+})
+
 
 
 
@@ -36,12 +42,26 @@ app.use(logger('dev'))
 |=============================================
 */
 
-const { User } = require('./Models/userModels');
-
+const { User } = require('./Models/userModel');
+const { Brand } = require('./Models/brandModel');
 
 
 // Middlewares 
 const { auth } = require('./middleware/auth');
+
+
+
+/**
+|=============================================
+|                   BRAND
+|=============================================
+*/
+
+app.post('/api/product/brand', auth, (req, res) => {
+
+
+})
+
 
 
 /**
@@ -102,7 +122,6 @@ app.post('/api/users/register', (req, res) => {
 
 
 
-
 // Login Users
 app.post('/api/users/login', (req, res) => {
     const { email, password } = req.body;
@@ -140,5 +159,5 @@ app.post('/api/users/login', (req, res) => {
 
 const PORT = process.env.PORT || 3002
 app.listen(PORT, () => {
-    console.log(`The server is running on port`, PORT);
+    console.log(chalk.bold(`The server is running on port`, PORT));
 })
