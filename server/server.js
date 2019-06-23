@@ -48,6 +48,7 @@ const { Brand } = require('./Models/brandModel');
 
 // Middlewares 
 const { auth } = require('./middleware/auth');
+const {adminAuth} = require('./middleware/adminAuth');
 
 
 
@@ -57,7 +58,16 @@ const { auth } = require('./middleware/auth');
 |=============================================
 */
 
-app.post('/api/product/brand', auth, (req, res) => {
+app.post('/api/product/brand', auth, adminAuth, (req, res) => {
+    const brand = new Brand(req.body); 
+
+    brand.save((err, doc) => { 
+        if(err) return res.json ({ success: false, err }); 
+        res.status(200).json({ 
+            success: true, 
+            brand: doc
+        })
+    })
 
 
 })
