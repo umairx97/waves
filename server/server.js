@@ -48,7 +48,7 @@ const { Brand } = require('./Models/brandModel');
 
 // Middlewares 
 const { auth } = require('./middleware/auth');
-const {adminAuth} = require('./middleware/adminAuth');
+const { adminAuth } = require('./middleware/adminAuth');
 
 
 
@@ -58,18 +58,27 @@ const {adminAuth} = require('./middleware/adminAuth');
 |=============================================
 */
 
+// Only Admin is allowed to save the brand with the included token 
+// adminAuth checks for admin and auth checks for login token
+// Save Brand Route
 app.post('/api/product/brand', auth, adminAuth, (req, res) => {
-    const brand = new Brand(req.body); 
+    const brand = new Brand(req.body);
 
-    brand.save((err, doc) => { 
-        if(err) return res.json ({ success: false, err }); 
-        res.status(200).json({ 
-            success: true, 
+    brand.save((err, doc) => {
+        if (err) return res.json({ success: false, err });
+        res.status(200).json({
+            success: true,
             brand: doc
         })
     })
+})
 
-
+// Get All Brands
+app.get("/api/product/brands", (req, res) => {
+    Brand.find({}, (err, brands) => {
+        if (err) return res.status(400).send(err)
+        res.status(200).send(brands);
+    })
 })
 
 
