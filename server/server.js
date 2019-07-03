@@ -18,7 +18,7 @@ require('dotenv').config();
 const { User } = require('./Models/userModel');
 const { Brand } = require('./Models/brandModel');
 const { Wood } = require('./Models/woodModel');
-
+const { Product } = require('./Models/productModel');
 
 // Middlewares 
 const { auth } = require('./middleware/auth');
@@ -50,6 +50,48 @@ app.use((req, res, next) => {
 })
 
 
+
+
+/**
+|=============================================
+|                   PRODUCTS
+|=============================================
+*/
+
+
+app.get('/api/product/articles_by_id', (req, res) => { 
+    let type = req.query.type; 
+    let items = req.query.id; 
+
+    if(type === 'array'){ 
+        let ids = req.query.id.split(','); 
+        items = [];
+        items = ids.map(item => { 
+            return mongoose.Types.ObjectId(item); 
+        })
+    }
+})
+
+
+
+app.post('/api/product/article', auth, adminAuth, (req, res) => {
+    const product = new Product(req.body);
+    product.save((err, doc) => {
+        if (err) return res.json({ success: false, err })
+        res.status(200).json({
+            success: true,
+            article: doc
+        })
+    })
+})
+
+
+// app.get('/api/products', (req, res) => {
+//     Product.find({}, (err, product) => {
+//         if (err) return res.status(400).send(err);
+//         res.status(200).send(product);
+//     })
+// })
 
 
 /**
