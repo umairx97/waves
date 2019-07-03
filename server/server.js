@@ -58,27 +58,45 @@ app.use((req, res, next) => {
 |=============================================
 */
 
+// Get all products by limiting and sorting them in order 
+app.get('/api/product/articles', (req, res) => {
 
-app.get('/api/product/articles_by_id', (req, res) => { 
-    let type = req.query.type; 
-    let items = req.query.id; 
+    let order = req.query.order ? req.query.order : 'asc';
+    let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
+    let limit = req.query.limit ? req.query.limit : 100;
 
-    if(type === 'array'){ 
-        let ids = req.query.id.split(','); 
-        items = [];
-        items = ids.map(item => { 
-            return mongoose.Types.ObjectId(item); 
+    Product.find()
+        .populate('brand')
+        .populate('wood')
+        .sort([[sortBy, order]])
+        .limit(limit)
+        .exec((err, articles) => {
+            if (err) return res.status(400).send(err);
+
+            return res.status(200).send(articles);
         })
-    }
-
-    Product.find({'_id': {$in: items}})
-    .populate('brand').populate('wood').
-    exec((err, docs) => {
-        return res.status(200).send(docs)
-    });
 
 })
 
+// Get all products base on id passed as a query string
+app.get('/api/product/articles_by_id', (req, res) => {
+    let type = req.query.type;
+    let items = req.query.id;
+
+    if (type === 'array') {
+        let ids = req.query.id.split(',');
+        items = [];
+        items = ids.map(item => {
+            return mongoose.Types.ObjectId(item);
+        })
+    }
+
+    Product.find({ '_id': { $in: items } })
+        .populate('brand').populate('wood').
+        exec((err, docs) => {
+            return res.status(200).send(docs)
+        });
+})
 
 
 app.post('/api/product/article', auth, adminAuth, (req, res) => {
@@ -91,14 +109,6 @@ app.post('/api/product/article', auth, adminAuth, (req, res) => {
         })
     })
 })
-
-
-// app.get('/api/products', (req, res) => {
-//     Product.find({}, (err, product) => {
-//         if (err) return res.status(400).send(err);
-//         res.status(200).send(product);
-//     })
-// })
 
 
 /**
