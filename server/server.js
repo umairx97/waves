@@ -17,6 +17,7 @@ require('dotenv').config();
 
 const { User } = require('./Models/userModel');
 const { Brand } = require('./Models/brandModel');
+const { Wood } = require('./Models/woodModel');
 
 
 // Middlewares 
@@ -46,6 +47,36 @@ app.use(logger('dev'))
 app.use((req, res, next) => {
     console.log(`${Date()}`)
     next();
+})
+
+
+
+
+/**
+|=============================================
+|                   WOODS
+|=============================================
+*/
+
+// Save Woods with admin role 
+app.post('/api/product/wood', auth, adminAuth, (req, res) => {
+    const wood = new Wood(req.body);
+
+    wood.save((err, doc) => {
+        if (err) return res.json({ success: false, err })
+        res.status(200).json({
+            success: true,
+            wood: doc
+        })
+    })
+})
+
+// Get All woods
+app.get('/api/product/woods', (req, res) => {
+    Wood.find({}, (err, woods) => {
+        if (err) return res.status(400).send(err);
+        res.status(200).send(woods);
+    })
 })
 
 
