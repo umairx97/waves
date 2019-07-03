@@ -70,6 +70,13 @@ app.get('/api/product/articles_by_id', (req, res) => {
             return mongoose.Types.ObjectId(item); 
         })
     }
+
+    Product.find({'_id': {$in: items}})
+    .populate('brand').populate('wood').
+    exec((err, docs) => {
+        return res.status(200).send(docs)
+    });
+
 })
 
 
