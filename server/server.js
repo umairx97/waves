@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
 const mongoose = require('mongoose');
 const logger = require('morgan');
 const chalk = require('chalk')
+// const cors = require('cors');
 
 // To get access to environment variables
 require('dotenv').config();
@@ -38,8 +38,7 @@ mongoose.connect(process.env.DATABASE_URI || databaseUri, (err, db) => {
     console.log(chalk.bold.yellow('Mongoose Open For Business'))
 });
 
-
-app.use(cors());
+// app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 app.use(cookieParser())
@@ -164,7 +163,7 @@ app.post('/api/product/brand', auth, adminAuth, (req, res) => {
 app.get("/api/product/brands", (req, res) => {
     Brand.find({}, (err, brands) => {
         if (err) return res.status(400).send(err)
-        res.status(200).send(brands);
+        res.status(200).send({ success: true, brands });
     })
 })
 
@@ -263,7 +262,7 @@ app.post('/api/users/login', (req, res) => {
 
 })
 
-const PORT = process.env.PORT || 3002
+const PORT = process.env.PORT || 4000
 app.listen(PORT, () => {
     console.log(chalk.bold(`The server is running on port`, PORT));
 })
