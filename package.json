@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/umairx97/waves#readme",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "chalk": "^2.4.2",
     "cloudinary": "^1.11.0",
